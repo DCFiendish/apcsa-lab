@@ -305,7 +305,8 @@ let cheerpjReady = false;
 async function bootCheerpj(){
   const banner = document.getElementById('boot-banner');
   try{
-    await cheerpjInit({ status: 'none' });
+    const pageDir = location.href.slice(0, location.href.lastIndexOf('/') + 1);
+    await cheerpjInit({ status: 'none', overrideDocumentBase: pageDir });
     cheerpjCreateDisplay(-1, -1, document.getElementById('cj-display-host'));
     cheerpjReady = true;
     banner.classList.add('ok');
