@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP CSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
+<style>
+  :root{
+    --bg:#14151a;
+    --surface:#1b1d24;
+    --surface2:#242630;
+    --border:#33353f;
+    --text:#e9e7e2;
+    --text-dim:#9b99a6;
+    --accent:#d98a3d;
+    --accent-dim:#8a5c2a;
+    --teal:#4fb8a8;
+    --success:#5fb86e;
+    --danger:#e0605a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);}
+  body{
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    display:flex;
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:'Sora',system-ui,sans-serif;margin:0 0 .4em;letter-spacing:-0.01em;text-wrap:balance;}
+  h2{font-size:1.45rem;}
+  code,.mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:var(--teal);}
+
+  #sidebar{
+    width:280px;flex:0 0 280px;
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    padding:24px 16px;
+    position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
+  #sidebar h1{font-size:1.1rem;color:var(--text);}
+  #sidebar .tagline{font-size:.78rem;color:var(--text-dim);margin-bottom:20px;}
+  .nav-group-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin:18px 0 6px;}
+  .unit-group{margin-bottom:6px;}
+  .unit-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:7px 8px;border-radius:6px;cursor:pointer;
+    font-size:.86rem;font-weight:600;color:var(--text);
+  }
+  .unit-head:hover{background:var(--surface2);}
+  .unit-head .cnt{font-size:.68rem;color:var(--text-dim);font-weight:500;}
+  .topic-list{padding-left:6px;}
+  .topic-list.collapsed{display:none;}
+  .nav-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 8px 6px 12px;border-radius:6px;margin-bottom:1px;
+    color:var(--text-dim);text-decoration:none;font-size:.8rem;cursor:pointer;
+    border-left:2px solid transparent;
+  }
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  .nav-item.active{background:var(--accent-dim);color:#fff;border-left-color:var(--accent);}
+  .nav-item.locked{opacity:.4;cursor:default;}
+  .nav-item.locked:hover{background:none;color:var(--text-dim);}
+  .nav-num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--teal);margin-right:6px;}
+  .nav-item.active .nav-num{color:#fff;}
+  .nav-check{color:var(--success);font-size:.75rem;margin-left:6px;}
+  .nav-weight{font-size:.68rem;color:var(--text-dim);}
+
+  #main{flex:1;padding:32px 40px;max-width:920px;}
+  .unit-weight-tag{
+    display:inline-block;background:var(--surface2);color:var(--teal);
+    font-size:.75rem;padding:2px 10px;border-radius:999px;margin-bottom:14px;
+  }
+  .concept{font-size:.98rem;line-height:1.6;color:var(--text);margin-bottom:22px;}
+  .concept ul{padding-left:1.2em;}
+  .pitfall{
+    background:#2a2018;border:1px solid #4a3220;border-left:3px solid var(--accent);
+    padding:10px 14px;border-radius:6px;font-size:.85rem;margin:14px 0;color:#f0d9b8;
+  }
+  .pitfall b{color:var(--accent);}
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:18px 20px;margin-bottom:20px;
+  }
+  .card h3{font-size:.95rem;color:var(--text);}
+  .card .prompt{font-size:.88rem;color:var(--text-dim);margin-bottom:12px;}
+  .CodeMirror{height:auto;min-height:100px;border-radius:6px;font-size:.85rem;}
+
+  .runner-controls{display:flex;align-items:center;gap:12px;margin-top:10px;}
+  .run-btn{
+    background:var(--accent);color:#1a1300;border:none;border-radius:6px;
+    padding:7px 16px;font-weight:600;font-size:.82rem;cursor:pointer;
+  }
+  .run-btn:hover:not(:disabled){background:#e79a4d;}
+  .run-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .status{font-size:.8rem;color:var(--text-dim);}
+  .status-pending{color:var(--text-dim);}
+  .status-pass{color:var(--success);font-weight:600;}
+  .status-fail{color:var(--danger);font-weight:600;}
+
+  .console-out{
+    background:#0e0f13;border:1px solid var(--border);border-radius:6px;
+    padding:10px 12px;font-size:.82rem;min-height:1.4em;white-space:pre-wrap;
+    margin-top:10px;color:#d7d5cf;
+  }
+
+  #boot-banner{
+    background:var(--surface2);border-bottom:1px solid var(--border);
+    padding:8px 20px;font-size:.82rem;color:var(--text-dim);
+    position:sticky;top:0;z-index:5;
+  }
+  #boot-banner.ok{display:none;}
+  #boot-banner.err{color:var(--danger);}
+  #cj-display-host{display:none;}
+  .placeholder{color:var(--text-dim);font-size:.9rem;padding:40px 0;}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h1>AP CSA Lab</h1>
+  <div class="tagline">Hands-on Java, real compiler, runs entirely in this browser tab.</div>
+  <div class="nav-group-label">Units</div>
+  <div id="unit-nav"></div>
+  <div class="nav-group-label">Reference</div>
+  <div id="ref-nav"></div>
+</div>
+
+<div id="main">
+  <div id="boot-banner">Booting Java runtime (first load downloads the JVM, ~15&#8211;20s)&hellip;</div>
+  <div id="content"></div>
+</div>
+
+<div id="cj-display-host"></div>
+
+<script>
+// ---------- Data ----------
+// Structure mirrors the official College Board CED (2025-26 revision): 4 units,
+// each with numbered x.y sub-topics. Topics without content are locked placeholders.
+const UNITS = [
+  {
+    num: 1, title: 'Using Objects and Methods', weight: '15–25%',
+    topics: [
+      { id: '1.1', title: 'Intro to Algorithms, Programming & Compilers', locked: true },
+      {
+        id: '1.2', title: 'Variables and Data Types',
+        concept: `<p>Java is statically typed: every variable's type is fixed when declared. The primitive types you'll use constantly are <code>int</code> (whole numbers), <code>double</code> (decimals), <code>boolean</code> (true/false), and <code>char</code> (a single character).</p>`,
+        exercises: [{
+          id: 't1_2e1',
+          prompt: 'Declare a double named gpa set to 3.85 and a boolean named honorRoll set to true. Print gpa, then print honorRoll, each on its own line.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        // TODO: declare gpa (double, 3.85) and honorRoll (boolean, true)
+
+        // TODO: print gpa, then print honorRoll
+    }
+}`,
+          check: out => out.trim() === '3.85\ntrue',
+          hint: 'double gpa = 3.85; boolean honorRoll = true; then two println calls.'
+        }]
+      },
+      {
+        id: '1.3', title: 'Expressions and Output',
+        concept: `<p>Arithmetic expressions follow normal precedence (<code>*</code> and <code>/</code> before <code>+</code> and <code>-</code>). The type of a division depends on its operands: <code>int / int</code> is <b>integer division</b> — it truncates toward zero rather than rounding.</p>`,
+        pitfalls: [`<b>AP trap:</b> <code>int total = (score1 + score2 + score3) / 3;</code> silently truncates the average. If any operand is an <code>int</code>, the whole division is integer division — cast at least one side to <code>double</code>.`],
+        example: {
+          label: 'Worked example — division & modulus',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int a = 7;
+        int b = 2;
+        System.out.println(a / b);          // integer division
+        System.out.println(a / (double) b);  // cast forces double division
+        System.out.println(a % b);           // modulus (remainder)
+    }
+}`
+        },
+        exercises: [{
+          id: 't1_3e1',
+          prompt: 'This computes an average test score, but integer division is silently truncating it. Fix the code so it divides using doubles.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int score1 = 88, score2 = 92, score3 = 79;
+        double average = (score1 + score2 + score3) / 3; // BUG
+        System.out.println(average);
+    }
+}`,
+          check: out => {
+            const n = parseFloat(out.trim());
+            return !isNaN(n) && Math.abs(n - 86.33333333333333) < 0.001;
+          },
+          hint: 'Expected roughly 86.33333333333333 — cast one operand to double, e.g. (double)(score1+score2+score3) / 3.'
+        }]
+      },
+      { id: '1.4', title: 'Assignment Statements and Input', locked: true },
+      {
+        id: '1.5', title: 'Casting and Range of Variables',
+        concept: `<p>Casting converts a value from one type to another, e.g. <code>(int) someDouble</code>. Casting a <code>double</code> to an <code>int</code> <b>truncates</b> the decimal part — it does not round.</p>`,
+        pitfalls: [`<code>(int)</code> cast truncates, it does not round. <code>(int) 19.99</code> is <code>19</code>, not <code>20</code>.`],
+        exercises: [{
+          id: 't1_5e1',
+          prompt: 'Predict, then run: what happens when a double is cast to an int?',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        double price = 19.99;
+        int dollars = (int) price;
+        System.out.println(dollars);
+    }
+}`,
+          check: out => out.trim() === '19',
+          hint: 'Casting to int truncates the decimal — it does not round to 20.'
+        }]
+      },
+      {
+        id: '1.6', title: 'Compound Assignment Operators',
+        concept: `<p>Compound assignment (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>) applies the operation to the variable's current value, one statement at a time, left to right through the program.</p>`,
+        exercises: [{
+          id: 't1_6e1',
+          prompt: 'Trace the compound assignments by hand, then run to check your prediction for the final value of total.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int total = 10;
+        total += 5;
+        total *= 2;
+        total -= 3;
+        System.out.println(total);
+    }
+}`,
+          check: out => out.trim() === '27',
+          hint: 'Step through it: 10 -> 15 -> 30 -> 27.'
+        }]
+      },
+      { id: '1.7', title: 'Application Program Interface (API) and Libraries', locked: true },
+      { id: '1.8', title: 'Documentation with Comments', locked: true },
+      { id: '1.9', title: 'Method Signatures', locked: true },
+      { id: '1.10', title: 'Calling Class Methods', locked: true },
+      {
+        id: '1.11', title: 'Math Class',
+        concept: `<p><code>Math</code> is a class of static methods: <code>Math.pow(base, exp)</code>, <code>Math.sqrt(x)</code>, <code>Math.abs(x)</code>, <code>Math.max(a,b)</code>, <code>Math.min(a,b)</code>. Called as <code>Math.method(...)</code>, no object needed.</p>`,
+        exercises: [{
+          id: 't1_11e1',
+          prompt: 'Compute the hypotenuse of a right triangle with legs 6 and 8 using the Pythagorean theorem. Use Math.pow and Math.sqrt.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        double a = 6, b = 8;
+        double hypotenuse = 0; // TODO: use Math.sqrt and Math.pow
+        System.out.println(hypotenuse);
+    }
+}`,
+          check: out => out.trim() === '10.0',
+          hint: 'hypotenuse = Math.sqrt(Math.pow(a,2) + Math.pow(b,2)) -> 10.0'
+        }]
+      },
+      { id: '1.12', title: 'Objects: Instances of Classes', locked: true },
+      { id: '1.13', title: 'Object Creation and Storage (Instantiation)', locked: true },
+      { id: '1.14', title: 'Calling Instance Methods', locked: true },
+      { id: '1.15', title: 'String Manipulation', locked: true },
+    ]
+  },
+  {
+    num: 2, title: 'Selection and Iteration', weight: '25–35%',
+    topics: [
+      '2.1 Algorithms with Selection and Repetition', '2.2 Boolean Expressions', '2.3 if Statements',
+      '2.4 Nested if Statements', '2.5 Compound Boolean Expressions', '2.6 Comparing Boolean Expressions',
+      '2.7 while Loops', '2.8 for Loops', '2.9 Implementing Selection and Iteration Algorithms',
+      '2.10 Implementing String Algorithms', '2.11 Nested Iteration', '2.12 Informal Run-Time Analysis'
+    ].map(s => ({ id: s.split(' ')[0], title: s.slice(s.indexOf(' ') + 1), locked: true }))
+  },
+  {
+    num: 3, title: 'Class Creation', weight: '10–18%',
+    topics: [
+      '3.1 Abstraction and Program Design', '3.2 Impact of Program Design', '3.3 Anatomy of a Class',
+      '3.4 Constructors', '3.5 Methods: How to Write Them', '3.6 Methods: Passing and Returning References of an Object',
+      '3.7 Class Variables and Methods', '3.8 Scope and Access', "3.9 this Keyword"
+    ].map(s => ({ id: s.split(' ')[0], title: s.slice(s.indexOf(' ') + 1), locked: true }))
+  },
+  {
+    num: 4, title: 'Data Collections', weight: '30–40%',
+    topics: [
+      '4.1 Ethical and Social Issues Around Data Collection', '4.2 Intro to Using Data Sets',
+      '4.3 Array Creation and Access', '4.4 Array Traversals', '4.5 Implementing Array Algorithms',
+      '4.6 Using Text Files', '4.7 Wrapper Classes', '4.8 ArrayList Methods', '4.9 ArrayList Traversals',
+      '4.10 Implementing ArrayList Algorithms', '4.11 2D Array Creation and Access', '4.12 2D Array Traversals',
+      '4.13 Implementing 2D Array Algorithms', '4.14 Searching Algorithms', '4.15 Sorting Algorithms',
+      '4.16 Recursion', '4.17 Recursive Searching and Sorting'
+    ].map(s => ({ id: s.split(' ')[0], title: s.slice(s.indexOf(' ') + 1), locked: true }))
+  },
+];
+const ALL_TOPICS = UNITS.flatMap(u => u.topics.map(t => ({ ...t, unit: u })));
+const REFS = [
+  { id: 'quickref', title: 'Java Quick Reference', locked: true },
+  { id: 'practice', title: 'Practice Exam (FRQs)', locked: true },
+];
+
+// ---------- CheerpJ boot ----------
+let cheerpjReady = false;
+async function bootCheerpj(){
+  const banner = document.getElementById('boot-banner');
+  try{
+    await cheerpjInit({ status: 'none' });
+    cheerpjCreateDisplay(-1, -1, document.getElementById('cj-display-host'));
+    cheerpjReady = true;
+    banner.classList.add('ok');
+  }catch(e){
+    banner.classList.add('err');
+    banner.textContent = 'Could not load the Java runtime (needs an internet connection on first load). ' + e;
+  }
+}
+bootCheerpj();
+
+// ---------- Progress (localStorage, viewer-only) ----------
+function getProgress(){
+  try{ return JSON.parse(localStorage.getItem('apcsa-progress') || '{}'); }catch(e){ return {}; }
+}
+function setDone(id){
+  try{
+    const p = getProgress(); p[id] = true;
+    localStorage.setItem('apcsa-progress', JSON.stringify(p));
+  }catch(e){}
+}
+
+// ---------- Java runner ----------
+async function runJava(sourceCode, consoleEl, statusEl, runBtn){
+  if(!cheerpjReady){
+    statusEl.textContent = 'Java runtime still loading — wait a moment and try again.';
+    statusEl.className = 'status status-fail';
+    return null;
+  }
+  document.querySelectorAll('.run-btn').forEach(b => b.disabled = true);
+  document.querySelectorAll('[data-role="console"]').forEach(el => el.removeAttribute('id'));
+  consoleEl.id = 'console';
+  consoleEl.textContent = '';
+  statusEl.textContent = 'Compiling…';
+  statusEl.className = 'status status-pending';
+  try{
+    const encoder = new TextEncoder();
+    cheerpOSAddStringFile('/str/Main.java', encoder.encode(sourceCode));
+    const classPath = '/app/tools.jar:/files/';
+    const compileCode = await cheerpjRunMain('com.sun.tools.javac.Main', classPath, '/str/Main.java', '-d', '/files/');
+    if(compileCode !== 0){
+      await new Promise(r => setTimeout(r, 150));
+      statusEl.textContent = 'Compile error';
+      statusEl.className = 'status status-fail';
+      return { ok:false, output: consoleEl.textContent };
+    }
+    statusEl.textContent = 'Running…';
+    await cheerpjRunMain('Main', classPath);
+    await new Promise(r => setTimeout(r, 150));
+    return { ok:true, output: consoleEl.textContent };
+  }catch(e){
+    statusEl.textContent = 'Error: ' + e;
+    statusEl.className = 'status status-fail';
+    return { ok:false, output: consoleEl.textContent };
+  }finally{
+    document.querySelectorAll('.run-btn').forEach(b => b.disabled = false);
+  }
+}
+
+// ---------- Rendering ----------
+let expandedUnit = 1;
+
+function topicPassCount(topic){
+  if(!topic.exercises) return null;
+  const progress = getProgress();
+  const done = topic.exercises.filter(e => progress[e.id]).length;
+  return done + '/' + topic.exercises.length;
+}
+
+function renderNav(currentTopicId){
+  const unitNav = document.getElementById('unit-nav');
+  unitNav.innerHTML = '';
+  UNITS.forEach(u => {
+    const group = document.createElement('div');
+    group.className = 'unit-group';
+    const head = document.createElement('div');
+    head.className = 'unit-head';
+    head.innerHTML = `<span>Unit ${u.num} — ${u.title}</span><span class="cnt">${u.weight}</span>`;
+    const list = document.createElement('div');
+    list.className = 'topic-list' + (expandedUnit === u.num ? '' : ' collapsed');
+    head.onclick = () => { expandedUnit = (expandedUnit === u.num ? null : u.num); renderNav(currentTopicId); };
+    u.topics.forEach(t => {
+      const item = document.createElement('div');
+      item.className = 'nav-item' + (t.locked ? ' locked' : '') + (t.id === currentTopicId ? ' active' : '');
+      const pass = topicPassCount(t);
+      item.innerHTML = `<span><span class="nav-num">${t.id}</span>${t.title}</span><span class="nav-weight">${t.locked ? '' : (pass || '')}</span>`;
+      if(!t.locked) item.onclick = () => { location.hash = t.id; };
+      list.appendChild(item);
+    });
+    group.appendChild(head);
+    group.appendChild(list);
+    unitNav.appendChild(group);
+  });
+  const refNav = document.getElementById('ref-nav');
+  refNav.innerHTML = '';
+  REFS.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'nav-item' + (r.locked ? ' locked' : '') + (r.id === currentTopicId ? ' active' : '');
+    el.innerHTML = `<span>${r.title}</span><span class="nav-weight">${r.locked ? 'soon' : ''}</span>`;
+    if(!r.locked) el.onclick = () => { location.hash = r.id; };
+    refNav.appendChild(el);
+  });
+}
+
+function buildExerciseCard(topic, ex, idx){
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <h3>Exercise ${idx + 1}</h3>
+    <div class="prompt">${ex.prompt}</div>
+    <textarea class="editor"></textarea>
+    <div class="runner-controls">
+      <button class="run-btn">Run</button>
+      <span class="status"></span>
+    </div>
+    <pre class="console-out" data-role="console"></pre>
+    <div class="hint" style="display:none;font-size:.82rem;color:var(--text-dim);margin-top:8px;">${ex.hint}</div>
+  `;
+  const textarea = card.querySelector('.editor');
+  const cm = CodeMirror.fromTextArea(textarea, {
+    mode: 'text/x-java', theme: 'dracula', lineNumbers: true,
+    indentUnit: 4, tabSize: 4, viewportMargin: Infinity
+  });
+  cm.setValue(ex.starter);
+
+  const runBtn = card.querySelector('.run-btn');
+  const statusEl = card.querySelector('.status');
+  const consoleEl = card.querySelector('.console-out');
+  const hintEl = card.querySelector('.hint');
+
+  runBtn.onclick = async () => {
+    const result = await runJava(cm.getValue(), consoleEl, statusEl, runBtn);
+    if(!result) return;
+    if(result.ok && ex.check(result.output)){
+      statusEl.textContent = 'Passed';
+      statusEl.className = 'status status-pass';
+      setDone(ex.id);
+      renderNav(topic.id);
+      hintEl.style.display = 'none';
+    }else if(result.ok){
+      statusEl.textContent = 'Ran, but output doesn\'t match yet';
+      statusEl.className = 'status status-fail';
+      hintEl.style.display = 'block';
+    }else{
+      hintEl.style.display = 'block';
+    }
+  };
+  return card;
+}
+
+function renderTopic(topic){
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  const header = document.createElement('div');
+  header.innerHTML = `<div class="unit-weight-tag">Unit ${topic.unit.num} — ${topic.unit.title} · AP exam weight ${topic.unit.weight}</div><h2>${topic.id} ${topic.title}</h2>`;
+  content.appendChild(header);
+
+  if(topic.locked){
+    content.innerHTML += `<div class="placeholder">Content for this topic ships in a later build phase.</div>`;
+    return;
+  }
+
+  const conceptDiv = document.createElement('div');
+  conceptDiv.className = 'concept';
+  conceptDiv.innerHTML = topic.concept || '';
+  content.appendChild(conceptDiv);
+
+  (topic.pitfalls || []).forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'pitfall';
+    d.innerHTML = p;
+    content.appendChild(d);
+  });
+
+  if(topic.example){
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <h3>${topic.example.label}</h3>
+      <textarea class="editor"></textarea>
+      <div class="runner-controls">
+        <button class="run-btn">Run example</button>
+        <span class="status"></span>
+      </div>
+      <pre class="console-out" data-role="console"></pre>
+    `;
+    const textarea = card.querySelector('.editor');
+    const cm = CodeMirror.fromTextArea(textarea, {
+      mode: 'text/x-java', theme: 'dracula', lineNumbers: true,
+      indentUnit: 4, tabSize: 4, viewportMargin: Infinity
+    });
+    cm.setValue(topic.example.code);
+    const runBtn = card.querySelector('.run-btn');
+    const statusEl = card.querySelector('.status');
+    const consoleEl = card.querySelector('.console-out');
+    runBtn.onclick = async () => {
+      const result = await runJava(cm.getValue(), consoleEl, statusEl, runBtn);
+      if(result && result.ok){ statusEl.textContent = 'Ran'; statusEl.className = 'status'; }
+    };
+    content.appendChild(card);
+  }
+
+  (topic.exercises || []).forEach((ex, i) => {
+    content.appendChild(buildExerciseCard(topic, ex, i));
+  });
+}
+
+function renderRef(ref){
+  document.getElementById('content').innerHTML = `<h2>${ref.title}</h2><div class="placeholder">Ships in a later build phase.</div>`;
+}
+
+function route(){
+  const hash = location.hash.replace('#','') || '1.2';
+  const topic = ALL_TOPICS.find(t => t.id === hash);
+  const ref = REFS.find(r => r.id === hash);
+  if(topic) expandedUnit = topic.unit.num;
+  renderNav(hash);
+  if(topic) renderTopic(topic);
+  else if(ref) renderRef(ref);
+  else renderTopic(ALL_TOPICS.find(t => !t.locked));
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
