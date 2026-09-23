@@ -151,7 +151,14 @@ const UNITS = [
     topics: [
       {
         id: '1.1', title: 'Intro to Algorithms, Programming & Compilers',
-        concept: `<p>An algorithm is a precise, ordered sequence of steps. Java source compiles to bytecode; the compiler rejects <b>syntax errors</b> before anything runs. Two other failure modes matter more on the exam: a <b>runtime error</b> (compiles, crashes mid-execution — e.g. dividing by zero) and a <b>logic error</b> (compiles, runs, finishes, and is simply wrong). The compiler is powerless against the third kind.</p>`,
+        concept: `<p>An <b>algorithm</b> is just a precise, ordered list of steps to solve a problem — a recipe. A program is an algorithm written in a language a computer can act on. Java programs are text files (<code>.java</code>) that go through a <b>compiler</b>, which translates your source code into <b>bytecode</b>, a lower-level form the Java Virtual Machine (JVM) actually runs. This compile step is why Java catches many mistakes before your program ever executes.</p>
+        <p>Three things can go wrong, and it matters which one you're dealing with:</p>
+        <ul>
+          <li><b>Syntax error</b> — you broke Java's grammar (missing semicolon, unmatched brace). The compiler refuses to produce bytecode at all, and tells you exactly where.</li>
+          <li><b>Runtime error</b> (exception) — the code compiles fine, but something fails while running (dividing by zero, accessing something that doesn't exist). The program crashes mid-execution with a stack trace.</li>
+          <li><b>Logic error</b> — the code compiles, runs, finishes normally, and produces output... that's just wrong. Nothing complains. This is the dangerous one, because the computer has no idea you meant something different.</li>
+        </ul>
+        <p>The compiler only ever catches the first kind. The other two are on you — which is the entire reason testing your own code (not just getting it to compile) matters.</p>`,
         pitfalls: [`The compiler checks syntax and types, never intent. It will happily compile a wrong formula.`],
         exercises: [{
           id: 't1_1e1',
@@ -169,7 +176,19 @@ const UNITS = [
       },
       {
         id: '1.2', title: 'Variables and Data Types',
-        concept: `<p>Java is statically typed: every variable's type is fixed when declared. The primitive types you'll use constantly are <code>int</code> (whole numbers), <code>double</code> (decimals), <code>boolean</code> (true/false), and <code>char</code> (a single character).</p>`,
+        concept: `<p>A <b>variable</b> is a named storage location. In Java you must <b>declare</b> its type before using it, and that type never changes — this is called <b>static typing</b>. The declaration syntax is <code>type name = value;</code>:</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">int age = 16;
+double price = 4.99;
+boolean isEnrolled = true;
+char grade = 'A';</pre>
+        <p>The four primitive types you'll use constantly:</p>
+        <ul>
+          <li><code>int</code> — a whole number (no decimal point), e.g. <code>-3</code>, <code>0</code>, <code>42</code>.</li>
+          <li><code>double</code> — a decimal (floating-point) number, e.g. <code>3.14</code>, <code>-0.5</code>.</li>
+          <li><code>boolean</code> — only ever <code>true</code> or <code>false</code>. No quotes, no other values.</li>
+          <li><code>char</code> — a single character, written in <b>single</b> quotes: <code>'A'</code>, <code>'7'</code>, <code>'$'</code>. (A String, by contrast, uses double quotes and can hold any number of characters — it's not a primitive at all, but an object, which matters starting in 1.12.)</li>
+        </ul>
+        <p>These are called "primitive" because the variable holds the actual value directly, not a reference to something else — unlike objects.</p>`,
         exercises: [{
           id: 't1_2e1',
           prompt: 'Declare a double named gpa set to 3.85 and a boolean named honorRoll set to true. Print gpa, then print honorRoll, each on its own line.',
@@ -186,7 +205,9 @@ const UNITS = [
       },
       {
         id: '1.3', title: 'Expressions and Output',
-        concept: `<p>Arithmetic expressions follow normal precedence (<code>*</code> and <code>/</code> before <code>+</code> and <code>-</code>). The type of a division depends on its operands: <code>int / int</code> is <b>integer division</b> — it truncates toward zero rather than rounding.</p>`,
+        concept: `<p>An <b>expression</b> is anything that evaluates to a value: <code>3 + 4</code>, <code>x * 2</code>, <code>"a" + "b"</code>. Java's arithmetic operators are <code>+ - * / %</code> (the last, <b>modulus</b>, gives the remainder of division: <code>7 % 2</code> is <code>1</code>). They follow the math order-of-operations you already know — <code>*</code>, <code>/</code>, <code>%</code> before <code>+</code>, <code>-</code> — and parentheses override that order, same as algebra.</p>
+        <p>To display a value, use <code>System.out.println(...)</code> (prints, then moves to a new line) or <code>System.out.print(...)</code> (prints, stays on the same line). You can join text and values with <code>+</code>: <code>System.out.println("Score: " + 95);</code> prints <code>Score: 95</code> — once either side of a <code>+</code> is a String, Java converts the other side to text instead of adding numbers.</p>
+        <p>One thing has no analogue in ordinary math: the type of a division depends on the types of its operands. <code>int / int</code> performs <b>integer division</b> — it throws away the remainder entirely (truncates toward zero) rather than rounding. <code>7 / 2</code> is <code>3</code>, not <code>3.5</code>. If either operand is a <code>double</code>, the division is done with decimals and you get the value you'd expect.</p>`,
         pitfalls: [`<b>AP trap:</b> <code>int total = (score1 + score2 + score3) / 3;</code> silently truncates the average. If any operand is an <code>int</code>, the whole division is integer division — cast at least one side to <code>double</code>.`],
         example: {
           label: 'Worked example — division & modulus',
@@ -219,7 +240,9 @@ const UNITS = [
       },
       {
         id: '1.4', title: 'Assignment Statements and Input',
-        concept: `<p><code>=</code> fully evaluates the right side first, then stores the result on the left. It's right-associative: <code>a = b = 5</code> assigns 5 to both. <code>Scanner</code> reads console input in real Java — out of reach in this browser sandbox, but assignment order itself is exam gold.</p>`,
+        concept: `<p>The <code>=</code> sign in Java is not the math symbol for equality — it's the <b>assignment operator</b>. <code>x = 5;</code> means "compute the right side, then store that value into x," full stop. Java always fully evaluates the entire right-hand side <i>before</i> storing anything, which is why <code>x = x + 1;</code> works: it reads the current (old) value of x, adds 1, and only then overwrites x with the result.</p>
+        <p>Assignment is <b>right-associative</b> and itself produces the assigned value, so you can chain it: <code>a = b = c = 10;</code> evaluates right to left, assigning 10 to c, then to b, then to a — all three end up holding 10.</p>
+        <p>To get input from a user, real Java programs use <code>java.util.Scanner</code> reading from <code>System.in</code> (e.g. <code>Scanner in = new Scanner(System.in); int n = in.nextInt();</code>). Console input isn't available in this browser sandbox, so we won't run that here — but you'll see it in real Java code and possibly on the exam as a concept.</p>`,
         pitfalls: [`<code>x = x + 1</code> isn't circular. The old value of x is read completely before the new value overwrites it.`],
         exercises: [{
           id: 't1_4e1',
@@ -239,7 +262,12 @@ const UNITS = [
       },
       {
         id: '1.5', title: 'Casting and Range of Variables',
-        concept: `<p>Casting converts a value from one type to another, e.g. <code>(int) someDouble</code>. Casting a <code>double</code> to an <code>int</code> <b>truncates</b> the decimal part — it does not round.</p>`,
+        concept: `<p><b>Casting</b> converts a value from one type to another. There are two directions, and they behave very differently:</p>
+        <ul>
+          <li><b>Widening</b> (small type → bigger type, e.g. <code>int</code> → <code>double</code>) happens <b>automatically</b>, no cast needed, and never loses information: <code>double d = 5;</code> silently becomes <code>5.0</code>.</li>
+          <li><b>Narrowing</b> (big type → smaller type, e.g. <code>double</code> → <code>int</code>) can lose information, so Java forces you to be explicit with a cast: <code>(int) 5.9</code>. The syntax is the target type in parentheses, right before the value.</li>
+        </ul>
+        <p>Casting a <code>double</code> to an <code>int</code> specifically <b>truncates</b> — it chops off everything after the decimal point. It does not round to the nearest whole number. <code>(int) 5.9</code> is <code>5</code>, and <code>(int) -5.9</code> is <code>-5</code> (truncation always moves toward zero, not just downward). "Range" in this topic's title refers to the fact that each numeric type can only hold values in a certain range (<code>int</code> maxes out around 2.1 billion) — going past it wraps around unexpectedly, though you're unlikely to hit that outside specifically-designed exam questions.</p>`,
         pitfalls: [`<code>(int)</code> cast truncates, it does not round. <code>(int) 19.99</code> is <code>19</code>, not <code>20</code>.`],
         exercises: [{
           id: 't1_5e1',
@@ -257,7 +285,10 @@ const UNITS = [
       },
       {
         id: '1.6', title: 'Compound Assignment Operators',
-        concept: `<p>Compound assignment (<code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>) applies the operation to the variable's current value, one statement at a time, left to right through the program.</p>`,
+        concept: `<p>Adding to a variable and reassigning it is common enough that Java has a shorthand for it. These two lines do exactly the same thing:</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">total = total + 5;
+total += 5;   // identical, shorter</pre>
+        <p>Every arithmetic operator has a compound form: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>. Each means "take my current value, apply this operation with the right-hand side, store the result back in me." When a program has several of these in a row, they execute one at a time, top to bottom — each line's effect is fully applied before the next line reads the variable.</p>`,
         exercises: [{
           id: 't1_6e1',
           prompt: 'Trace the compound assignments by hand, then run to check your prediction for the final value of total.',
@@ -276,7 +307,17 @@ const UNITS = [
       },
       {
         id: '1.7', title: 'Application Program Interface (API) and Libraries',
-        concept: `<p>Java's standard library is organized into packages. <code>java.lang</code> (String, Math, Integer...) is imported automatically; everything else needs an explicit <code>import</code>. An API is a contract — you call methods by name and signature without needing to know how they're implemented.</p>`,
+        concept: `<p>You don't have to write everything from scratch — Java ships with a huge <b>standard library</b> of pre-written classes, organized into <b>packages</b> (namespaces, written with dots: <code>java.util</code>, <code>java.io</code>). An <b>API</b> (Application Program Interface) is the public list of classes and methods a library exposes for you to call — you use it by name and signature without needing to know how it's implemented inside.</p>
+        <p>To use a class from a package, you <code>import</code> it at the top of the file, before the class declaration:</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rng = new Random();
+        // ...
+    }
+}</pre>
+        <p>One package is special: <code>java.lang</code> (containing <code>String</code>, <code>Math</code>, <code>Integer</code>, <code>System</code>...) is imported <b>automatically</b> into every Java file — that's why you've been using <code>Math</code> and <code>String</code> already without any <code>import</code> line.</p>`,
         example: {
           label: 'Worked example — importing a library class',
           code: `import java.util.Random;
@@ -291,7 +332,13 @@ public class Main {
       },
       {
         id: '1.8', title: 'Documentation with Comments',
-        concept: `<p><code>//</code> line comments, <code>/* */</code> block comments, <code>/** */</code> Javadoc (documentation tooling reads these). None affect the compiled program at all — they exist purely for the humans reading the code.</p>`,
+        concept: `<p><b>Comments</b> are text the compiler ignores completely — they exist purely for the humans reading the code later (including future you). Java has three styles:</p>
+        <ul>
+          <li><code>// text</code> — a <b>line comment</b>. Everything from <code>//</code> to the end of the line is ignored. Use it for a quick note next to a line of code.</li>
+          <li><code>/* text */</code> — a <b>block comment</b>. Can span multiple lines; everything between the markers is ignored. Use it to temporarily disable a chunk of code, or explain something longer.</li>
+          <li><code>/** text */</code> — a <b>Javadoc comment</b>, placed right above a class or method. It's still just a comment to the compiler, but documentation-generating tools and IDEs read it specially to show tooltips and generate reference docs.</li>
+        </ul>
+        <p>Good comments explain <i>why</i> something is done a non-obvious way — not <i>what</i> the code does line by line, which well-named variables and methods should already make clear.</p>`,
         example: {
           label: 'Worked example — comment styles',
           code: `/** Computes and prints the area of a circle. */
@@ -306,7 +353,8 @@ public class Main {
       },
       {
         id: '1.9', title: 'Method Signatures',
-        concept: `<p>A signature is a method's name plus its parameter types — the <b>return type is not part of it</b>. Overloaded methods share a name but differ in parameter types; the compiler resolves the call by matching argument types, widening primitives (int → double) if there's no exact match.</p>`,
+        concept: `<p>A <b>method</b> is a named, reusable block of code you invoke by writing its name followed by parentheses: <code>Math.sqrt(25)</code>. Whatever goes inside the parentheses are its <b>arguments</b>; a method may also produce a <b>return value</b> you can use, like <code>Math.sqrt(25)</code> returning <code>5.0</code>. (You'll write your own methods starting in Unit 3 — for now you're just calling ones Java already provides.)</p>
+        <p>A method's <b>signature</b> is its name plus the number and types of its parameters — notably, the <b>return type is not part of the signature</b>. This matters because of <b>overloading</b>: multiple methods can share the same name as long as their parameter types differ, e.g. <code>println(int)</code> and <code>println(String)</code> are two different overloads of <code>println</code>. When you call an overloaded method, the compiler looks at the arguments you passed and picks the overload that matches — widening a primitive (like <code>int</code> → <code>double</code>) automatically if there's no exact match.</p>`,
         pitfalls: [`<code>Math.max(3, 4.5)</code> has no <code>max(int, double)</code> overload to match, so the <code>3</code> widens to a double first — the call resolves to <code>max(double, double)</code>, and the result is a <b>double</b>, not an int.`],
         exercises: [{
           id: 't1_9e1',
@@ -322,7 +370,8 @@ public class Main {
       },
       {
         id: '1.10', title: 'Calling Class Methods',
-        concept: `<p>Static methods belong to the class itself: <code>ClassName.method(args)</code>, no object required. <code>Integer.parseInt(String)</code> and <code>Double.parseDouble(String)</code> convert text to numbers — the standard way to turn real-world text data into something you can compute with.</p>`,
+        concept: `<p>Some methods belong to the <b>class itself</b> rather than to any particular object — these are <code>static</code> methods, and you call them as <code>ClassName.methodName(args)</code>, no object required. You've already been doing this with <code>Math.sqrt(...)</code> and <code>Math.pow(...)</code>. (The opposite — <b>instance</b> methods, called on a specific object — is covered in 1.14.)</p>
+        <p>Two static methods you'll use constantly: <code>Integer.parseInt(String)</code> converts text like <code>"42"</code> into the int <code>42</code>, and <code>Double.parseDouble(String)</code> does the same for decimals. These are the standard way to turn real-world text (user input, file contents) into numbers you can actually compute with — you can't do arithmetic on a String.</p>`,
         exercises: [{
           id: 't1_10e1',
           prompt: 'Parse the string into an int, then print double its value.',
@@ -339,7 +388,15 @@ public class Main {
       },
       {
         id: '1.11', title: 'Math Class',
-        concept: `<p><code>Math</code> is a class of static methods: <code>Math.pow(base, exp)</code>, <code>Math.sqrt(x)</code>, <code>Math.abs(x)</code>, <code>Math.max(a,b)</code>, <code>Math.min(a,b)</code>. Called as <code>Math.method(...)</code>, no object needed.</p>`,
+        concept: `<p><code>Math</code> is a built-in class made up entirely of <code>static</code> methods (and one constant, <code>Math.PI</code>) — you never create a <code>Math</code> object, you just call <code>Math.methodName(...)</code> directly. The ones you'll reach for most:</p>
+        <ul>
+          <li><code>Math.pow(base, exp)</code> — base raised to a power. <code>Math.pow(2, 10)</code> is <code>1024.0</code>.</li>
+          <li><code>Math.sqrt(x)</code> — square root. <code>Math.sqrt(25)</code> is <code>5.0</code>.</li>
+          <li><code>Math.abs(x)</code> — absolute value. <code>Math.abs(-7)</code> is <code>7</code>.</li>
+          <li><code>Math.max(a, b)</code> / <code>Math.min(a, b)</code> — the larger/smaller of two values.</li>
+          <li><code>Math.random()</code> — a random double, <code>0.0</code> up to (not including) <code>1.0</code>.</li>
+        </ul>
+        <p>Note these mostly return <code>double</code>, even when the inputs are ints — worth keeping in mind when you print or assign the result.</p>`,
         exercises: [{
           id: 't1_11e1',
           prompt: 'Compute the hypotenuse of a right triangle with legs 6 and 8 using the Pythagorean theorem. Use Math.pow and Math.sqrt.',
@@ -356,7 +413,8 @@ public class Main {
       },
       {
         id: '1.12', title: 'Objects: Instances of Classes',
-        concept: `<p>Objects are compared with <code>==</code> by <b>reference</b> — are these literally the same object in memory? — not by content. Strings are objects: two Strings holding identical characters can still be two different objects. Use <code>.equals()</code> to compare content.</p>`,
+        concept: `<p>Everything you've used so far (<code>int</code>, <code>double</code>, <code>boolean</code>, <code>char</code>) is a <b>primitive</b> — the variable holds the actual value. An <b>object</b> is different: an object variable holds a <b>reference</b> (essentially, a memory address) pointing to where the object actually lives. <code>String</code>, which you've been using since 1.2, is secretly an object, not a primitive — it just gets special convenience syntax (double-quoted literals) that makes it look like one.</p>
+        <p>This distinction matters most for comparison. <code>==</code> on primitives compares values, exactly like you'd expect. But <code>==</code> on objects compares <b>references</b> — it asks "do these two variables point to the exact same object in memory?", not "do they represent the same content?" Two completely separate String objects can hold identical characters and still fail an <code>==</code> check, because they're different objects at different addresses. To compare an object's actual content, use its <code>.equals()</code> method instead.</p>`,
         pitfalls: [`<code>new String("hi") == new String("hi")</code> is <b>false</b>. Same characters, different objects. This is the single most common AP trap involving objects.`],
         exercises: [{
           id: 't1_12e1',
@@ -375,7 +433,8 @@ public class Main {
       },
       {
         id: '1.13', title: 'Object Creation and Storage (Instantiation)',
-        concept: `<p><code>new</code> calls a constructor and returns a reference to a freshly created object; the variable holds that reference, not the object's data directly. Once created, you call instance methods on it with <code>object.method(...)</code>.</p>`,
+        concept: `<p>To bring an object into existence, you use the <code>new</code> keyword followed by a call that looks like a method — this is a <b>constructor</b>: <code>String s = new String("hi");</code>. The constructor allocates memory for the object, sets it up, and <code>new</code> hands back a reference to it, which you store in a variable. From then on, that variable is your handle to the object — you call its instance methods through it with dot notation: <code>s.length()</code>.</p>
+        <p>(In practice, String literals like <code>"hi"</code> already create a String object behind the scenes, so you rarely write <code>new String(...)</code> in real code — but seeing it explicitly here makes the object-creation step visible instead of hidden.)</p>`,
         exercises: [{
           id: 't1_13e1',
           prompt: 'Create message by calling an instance method on first to combine it with second (no + operator).',
@@ -393,7 +452,15 @@ public class Main {
       },
       {
         id: '1.14', title: 'Calling Instance Methods',
-        concept: `<p>An instance method acts on a specific object: <code>object.method(args)</code>. Unlike a static method, you need an actual instance to call one on — there's no <code>ClassName.method()</code> shortcut. <code>String</code> is full of these: <code>.length()</code>, <code>.charAt(i)</code>, <code>.toUpperCase()</code>.</p>`,
+        concept: `<p>An <b>instance method</b> acts on one specific object and is called through it: <code>object.methodName(args)</code>. This is the mirror image of 1.10's static methods — there's no <code>ClassName.method()</code> shortcut here; you need an actual object (instance) to call one on, because the method typically works with that object's own data.</p>
+        <p><code>String</code> is full of instance methods worth knowing well:</p>
+        <ul>
+          <li><code>.length()</code> — number of characters.</li>
+          <li><code>.charAt(i)</code> — the character at index <code>i</code> (indices start at 0).</li>
+          <li><code>.toUpperCase()</code> / <code>.toLowerCase()</code> — a new String, case-converted.</li>
+          <li><code>.indexOf(x)</code> — position of the first occurrence of <code>x</code>, or <code>-1</code> if absent.</li>
+          <li><code>.equals(other)</code> — content comparison (see 1.12).</li>
+        </ul>`,
         exercises: [{
           id: 't1_14e1',
           prompt: 'Fill in len and first using instance methods on course.',
@@ -412,7 +479,15 @@ public class Main {
       },
       {
         id: '1.15', title: 'String Manipulation',
-        concept: `<p>Strings are <b>immutable</b> — every method that looks like it modifies one (<code>substring</code>, <code>toUpperCase</code>, <code>concat</code>) actually returns a brand-new String; the original never changes. <code>substring(start, end)</code> is start-inclusive, end-<b>exclusive</b>. <code>indexOf</code> returns <code>-1</code> when nothing is found — an int posing as a boolean.</p>`,
+        concept: `<p>The single most important fact about <code>String</code>: it's <b>immutable</b>. Once created, a String object's characters can never change. Every method that looks like it's modifying one — <code>.substring(...)</code>, <code>.toUpperCase()</code>, <code>.concat(...)</code>, <code>.replace(...)</code> — actually leaves the original untouched and returns a brand-new String with the result. This is why <code>s.toUpperCase();</code> alone does nothing useful: you have to capture the return value, <code>s = s.toUpperCase();</code>.</p>
+        <p>Common methods, beyond the ones from 1.14:</p>
+        <ul>
+          <li><code>.substring(start, end)</code> — the characters from index <code>start</code> up to <b>but not including</b> index <code>end</code>. <code>.substring(start)</code> alone goes to the end of the string.</li>
+          <li><code>.concat(other)</code> — joins two Strings (equivalent to <code>+</code>).</li>
+          <li><code>.trim()</code> — a copy with leading/trailing whitespace removed.</li>
+          <li><code>.compareTo(other)</code> — negative, zero, or positive, for alphabetical ordering.</li>
+        </ul>
+        <p><code>indexOf</code> returns <code>-1</code>, not a boolean, when it finds nothing — treating that <code>-1</code> as if it meant "false" is a common mistake, since <code>-1</code> is just as truthy/nonzero as any other int.</p>`,
         pitfalls: [`<code>"Hello".substring(1, 4)</code> takes indices 1, 2, 3 → <code>"ell"</code>. Index 4 ('o') is excluded — the end index is never included.`],
         exercises: [
           {
