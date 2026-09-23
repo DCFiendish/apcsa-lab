@@ -149,7 +149,24 @@ const UNITS = [
   {
     num: 1, title: 'Using Objects and Methods', weight: '15–25%',
     topics: [
-      { id: '1.1', title: 'Intro to Algorithms, Programming & Compilers', locked: true },
+      {
+        id: '1.1', title: 'Intro to Algorithms, Programming & Compilers',
+        concept: `<p>An algorithm is a precise, ordered sequence of steps. Java source compiles to bytecode; the compiler rejects <b>syntax errors</b> before anything runs. Two other failure modes matter more on the exam: a <b>runtime error</b> (compiles, crashes mid-execution — e.g. dividing by zero) and a <b>logic error</b> (compiles, runs, finishes, and is simply wrong). The compiler is powerless against the third kind.</p>`,
+        pitfalls: [`The compiler checks syntax and types, never intent. It will happily compile a wrong formula.`],
+        exercises: [{
+          id: 't1_1e1',
+          prompt: 'This compiles and runs with no error or exception — it is a pure logic error. Fix it so it prints the true average of a and b.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int a = 4, b = 6;
+        int result = a + b / 2; // intended: the average of a and b
+        System.out.println(result);
+    }
+}`,
+          check: out => out.trim() === '5',
+          hint: '/ binds tighter than +. You need (a + b) / 2, not a + (b / 2).'
+        }]
+      },
       {
         id: '1.2', title: 'Variables and Data Types',
         concept: `<p>Java is statically typed: every variable's type is fixed when declared. The primitive types you'll use constantly are <code>int</code> (whole numbers), <code>double</code> (decimals), <code>boolean</code> (true/false), and <code>char</code> (a single character).</p>`,
@@ -200,7 +217,26 @@ const UNITS = [
           hint: 'Expected roughly 86.33333333333333 — cast one operand to double, e.g. (double)(score1+score2+score3) / 3.'
         }]
       },
-      { id: '1.4', title: 'Assignment Statements and Input', locked: true },
+      {
+        id: '1.4', title: 'Assignment Statements and Input',
+        concept: `<p><code>=</code> fully evaluates the right side first, then stores the result on the left. It's right-associative: <code>a = b = 5</code> assigns 5 to both. <code>Scanner</code> reads console input in real Java — out of reach in this browser sandbox, but assignment order itself is exam gold.</p>`,
+        pitfalls: [`<code>x = x + 1</code> isn't circular. The old value of x is read completely before the new value overwrites it.`],
+        exercises: [{
+          id: 't1_4e1',
+          prompt: 'Predict the final values, then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int a, b, c;
+        a = b = c = 10;
+        a = a + b;
+        b = a - b;
+        System.out.println(a + " " + b + " " + c);
+    }
+}`,
+          check: out => out.trim() === '20 10 10',
+          hint: 'Chained assignment sets a, b, c all to 10 first. Then trace top to bottom using the OLD value of a variable before its line overwrites it.'
+        }]
+      },
       {
         id: '1.5', title: 'Casting and Range of Variables',
         concept: `<p>Casting converts a value from one type to another, e.g. <code>(int) someDouble</code>. Casting a <code>double</code> to an <code>int</code> <b>truncates</b> the decimal part — it does not round.</p>`,
@@ -238,10 +274,69 @@ const UNITS = [
           hint: 'Step through it: 10 -> 15 -> 30 -> 27.'
         }]
       },
-      { id: '1.7', title: 'Application Program Interface (API) and Libraries', locked: true },
-      { id: '1.8', title: 'Documentation with Comments', locked: true },
-      { id: '1.9', title: 'Method Signatures', locked: true },
-      { id: '1.10', title: 'Calling Class Methods', locked: true },
+      {
+        id: '1.7', title: 'Application Program Interface (API) and Libraries',
+        concept: `<p>Java's standard library is organized into packages. <code>java.lang</code> (String, Math, Integer...) is imported automatically; everything else needs an explicit <code>import</code>. An API is a contract — you call methods by name and signature without needing to know how they're implemented.</p>`,
+        example: {
+          label: 'Worked example — importing a library class',
+          code: `import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rng = new Random(42); // fixed seed -> reproducible sequence
+        System.out.println(rng.nextInt(100));
+    }
+}`
+        }
+      },
+      {
+        id: '1.8', title: 'Documentation with Comments',
+        concept: `<p><code>//</code> line comments, <code>/* */</code> block comments, <code>/** */</code> Javadoc (documentation tooling reads these). None affect the compiled program at all — they exist purely for the humans reading the code.</p>`,
+        example: {
+          label: 'Worked example — comment styles',
+          code: `/** Computes and prints the area of a circle. */
+public class Main {
+    public static void main(String[] args) {
+        double radius = 3.0; // measured in centimeters
+        /* Area of a circle = pi * r^2 */
+        System.out.println(Math.PI * radius * radius);
+    }
+}`
+        }
+      },
+      {
+        id: '1.9', title: 'Method Signatures',
+        concept: `<p>A signature is a method's name plus its parameter types — the <b>return type is not part of it</b>. Overloaded methods share a name but differ in parameter types; the compiler resolves the call by matching argument types, widening primitives (int → double) if there's no exact match.</p>`,
+        pitfalls: [`<code>Math.max(3, 4.5)</code> has no <code>max(int, double)</code> overload to match, so the <code>3</code> widens to a double first — the call resolves to <code>max(double, double)</code>, and the result is a <b>double</b>, not an int.`],
+        exercises: [{
+          id: 't1_9e1',
+          prompt: 'Predict the output — including whether it prints as an int or a double — then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        System.out.println(Math.max(3, 4.5));
+    }
+}`,
+          check: out => out.trim() === '4.5',
+          hint: 'No int/double overload exists, so 3 widens to 3.0 and max(double,double) runs — the result prints as 4.5, a double.'
+        }]
+      },
+      {
+        id: '1.10', title: 'Calling Class Methods',
+        concept: `<p>Static methods belong to the class itself: <code>ClassName.method(args)</code>, no object required. <code>Integer.parseInt(String)</code> and <code>Double.parseDouble(String)</code> convert text to numbers — the standard way to turn real-world text data into something you can compute with.</p>`,
+        exercises: [{
+          id: 't1_10e1',
+          prompt: 'Parse the string into an int, then print double its value.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        String input = "42";
+        int n = 0; // TODO: parse input into n
+        System.out.println(n * 2);
+    }
+}`,
+          check: out => out.trim() === '84',
+          hint: 'int n = Integer.parseInt(input);'
+        }]
+      },
       {
         id: '1.11', title: 'Math Class',
         concept: `<p><code>Math</code> is a class of static methods: <code>Math.pow(base, exp)</code>, <code>Math.sqrt(x)</code>, <code>Math.abs(x)</code>, <code>Math.max(a,b)</code>, <code>Math.min(a,b)</code>. Called as <code>Math.method(...)</code>, no object needed.</p>`,
@@ -259,10 +354,97 @@ const UNITS = [
           hint: 'hypotenuse = Math.sqrt(Math.pow(a,2) + Math.pow(b,2)) -> 10.0'
         }]
       },
-      { id: '1.12', title: 'Objects: Instances of Classes', locked: true },
-      { id: '1.13', title: 'Object Creation and Storage (Instantiation)', locked: true },
-      { id: '1.14', title: 'Calling Instance Methods', locked: true },
-      { id: '1.15', title: 'String Manipulation', locked: true },
+      {
+        id: '1.12', title: 'Objects: Instances of Classes',
+        concept: `<p>Objects are compared with <code>==</code> by <b>reference</b> — are these literally the same object in memory? — not by content. Strings are objects: two Strings holding identical characters can still be two different objects. Use <code>.equals()</code> to compare content.</p>`,
+        pitfalls: [`<code>new String("hi") == new String("hi")</code> is <b>false</b>. Same characters, different objects. This is the single most common AP trap involving objects.`],
+        exercises: [{
+          id: 't1_12e1',
+          prompt: 'Predict both lines of output, then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        String a = new String("hi");
+        String b = new String("hi");
+        System.out.println(a == b);
+        System.out.println(a.equals(b));
+    }
+}`,
+          check: out => out.trim() === 'false\ntrue',
+          hint: '== asks "same object?" (no). .equals() asks "same content?" (yes).'
+        }]
+      },
+      {
+        id: '1.13', title: 'Object Creation and Storage (Instantiation)',
+        concept: `<p><code>new</code> calls a constructor and returns a reference to a freshly created object; the variable holds that reference, not the object's data directly. Once created, you call instance methods on it with <code>object.method(...)</code>.</p>`,
+        exercises: [{
+          id: 't1_13e1',
+          prompt: 'Create message by calling an instance method on first to combine it with second (no + operator).',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        String first = new String("Hello");
+        String second = new String(", World!");
+        String message = ""; // TODO: use .concat() to combine first and second
+        System.out.println(message);
+    }
+}`,
+          check: out => out.trim() === 'Hello, World!',
+          hint: 'message = first.concat(second);'
+        }]
+      },
+      {
+        id: '1.14', title: 'Calling Instance Methods',
+        concept: `<p>An instance method acts on a specific object: <code>object.method(args)</code>. Unlike a static method, you need an actual instance to call one on — there's no <code>ClassName.method()</code> shortcut. <code>String</code> is full of these: <code>.length()</code>, <code>.charAt(i)</code>, <code>.toUpperCase()</code>.</p>`,
+        exercises: [{
+          id: 't1_14e1',
+          prompt: 'Fill in len and first using instance methods on course.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        String course = "AP Computer Science A";
+        int len = 0;      // TODO: length of course
+        char first = ' '; // TODO: first character of course
+        System.out.println(len);
+        System.out.println(first);
+    }
+}`,
+          check: out => out.trim() === '21\nA',
+          hint: 'len = course.length(); first = course.charAt(0);'
+        }]
+      },
+      {
+        id: '1.15', title: 'String Manipulation',
+        concept: `<p>Strings are <b>immutable</b> — every method that looks like it modifies one (<code>substring</code>, <code>toUpperCase</code>, <code>concat</code>) actually returns a brand-new String; the original never changes. <code>substring(start, end)</code> is start-inclusive, end-<b>exclusive</b>. <code>indexOf</code> returns <code>-1</code> when nothing is found — an int posing as a boolean.</p>`,
+        pitfalls: [`<code>"Hello".substring(1, 4)</code> takes indices 1, 2, 3 → <code>"ell"</code>. Index 4 ('o') is excluded — the end index is never included.`],
+        exercises: [
+          {
+            id: 't1_15e1',
+            prompt: 'Predict the output, then run to check.',
+            starter: `public class Main {
+    public static void main(String[] args) {
+        String word = "Computer";
+        System.out.println(word.substring(2, 5));
+    }
+}`,
+            check: out => out.trim() === 'mpu',
+            hint: 'Indices 2, 3, 4 are C(0)o(1)[m(2)p(3)u(4)]t(5)e(6)r(7) -> "mpu".'
+          },
+          {
+            id: 't1_15e2_checkpoint',
+            prompt: 'Unit 1 checkpoint (interleaves 1.9, 1.10, 1.14, 1.15): given a two-word name, print the initials as uppercase, using only indexOf/substring/charAt — no loops.',
+            starter: `public class Main {
+    public static void main(String[] args) {
+        String fullName = "ada lovelace";
+        int spaceIndex = fullName.indexOf(' ');
+        String first = fullName.substring(0, 1);
+        String second = ""; // TODO: the first character of the word after the space, as a String
+        String initials = (first + second).toUpperCase();
+        System.out.println(initials);
+    }
+}`,
+            check: out => out.trim() === 'AL',
+            hint: 'second = String.valueOf(fullName.charAt(spaceIndex + 1)); — String.valueOf is a static method call (1.10) that converts a char to a String.'
+          }
+        ]
+      },
     ]
   },
   {
