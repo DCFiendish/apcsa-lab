@@ -301,13 +301,18 @@ const REFS = [
 ];
 
 // ---------- CheerpJ boot ----------
+// tools.jar (the in-browser javac) is staged into CheerpJ's own virtual FS via fetch,
+// rather than relied on through the "/app/" origin-root mount CheerpJ uses internally —
+// that mount resolves against location.origin, not this page's own folder, which breaks
+// as soon as the site is hosted under a sub-path (e.g. a GitHub Pages project site).
 let cheerpjReady = false;
 async function bootCheerpj(){
   const banner = document.getElementById('boot-banner');
   try{
-    const pageDir = location.href.slice(0, location.href.lastIndexOf('/') + 1);
-    await cheerpjInit({ status: 'none', overrideDocumentBase: pageDir });
+    await cheerpjInit({ status: 'none' });
     cheerpjCreateDisplay(-1, -1, document.getElementById('cj-display-host'));
+    const jarBuf = await fetch('./tools.jar').then(r => r.arrayBuffer());
+    cheerpOSAddStringFile('/str/tools.jar', new Uint8Array(jarBuf));
     cheerpjReady = true;
     banner.classList.add('ok');
   }catch(e){
@@ -344,7 +349,7 @@ async function runJava(sourceCode, consoleEl, statusEl, runBtn){
   try{
     const encoder = new TextEncoder();
     cheerpOSAddStringFile('/str/Main.java', encoder.encode(sourceCode));
-    const classPath = '/app/tools.jar:/files/';
+    const classPath = '/str/tools.jar:/files/';
     const compileCode = await cheerpjRunMain('com.sun.tools.javac.Main', classPath, '/str/Main.java', '-d', '/files/');
     if(compileCode !== 0){
       await new Promise(r => setTimeout(r, 150));
