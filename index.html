@@ -160,6 +160,17 @@ const UNITS = [
         </ul>
         <p>The compiler only ever catches the first kind. The other two are on you — which is the entire reason testing your own code (not just getting it to compile) matters.</p>`,
         pitfalls: [`The compiler checks syntax and types, never intent. It will happily compile a wrong formula.`],
+        example: {
+          label: 'Worked example — a simple sequence',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int milesDriven = 120;
+        int gallonsUsed = 4;
+        double milesPerGallon = milesDriven / (double) gallonsUsed;
+        System.out.println("MPG: " + milesPerGallon);
+    }
+}`
+        },
         exercises: [{
           id: 't1_1e1',
           prompt: 'This compiles and runs with no error or exception — it is a pure logic error. Fix it so it prints the true average of a and b.',
@@ -189,6 +200,21 @@ char grade = 'A';</pre>
           <li><code>char</code> — a single character, written in <b>single</b> quotes: <code>'A'</code>, <code>'7'</code>, <code>'$'</code>. (A String, by contrast, uses double quotes and can hold any number of characters — it's not a primitive at all, but an object, which matters starting in 1.12.)</li>
         </ul>
         <p>These are called "primitive" because the variable holds the actual value directly, not a reference to something else — unlike objects.</p>`,
+        example: {
+          label: 'Worked example — declaring and printing each type',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int age = 16;
+        double price = 4.99;
+        boolean isEnrolled = true;
+        char grade = 'A';
+        System.out.println(age);
+        System.out.println(price);
+        System.out.println(isEnrolled);
+        System.out.println(grade);
+    }
+}`
+        },
         exercises: [{
           id: 't1_2e1',
           prompt: 'Declare a double named gpa set to 3.85 and a boolean named honorRoll set to true. Print gpa, then print honorRoll, each on its own line.',
@@ -243,6 +269,17 @@ char grade = 'A';</pre>
         concept: `<p>The <code>=</code> sign in Java is not the math symbol for equality — it's the <b>assignment operator</b>. <code>x = 5;</code> means "compute the right side, then store that value into x," full stop. Java always fully evaluates the entire right-hand side <i>before</i> storing anything, which is why <code>x = x + 1;</code> works: it reads the current (old) value of x, adds 1, and only then overwrites x with the result.</p>
         <p>Assignment is <b>right-associative</b> and itself produces the assigned value, so you can chain it: <code>a = b = c = 10;</code> evaluates right to left, assigning 10 to c, then to b, then to a — all three end up holding 10.</p>
         <p>To get input from a user, real Java programs use <code>java.util.Scanner</code> reading from <code>System.in</code> (e.g. <code>Scanner in = new Scanner(System.in); int n = in.nextInt();</code>). Console input isn't available in this browser sandbox, so we won't run that here — but you'll see it in real Java code and possibly on the exam as a concept.</p>`,
+        example: {
+          label: 'Worked example — chained assignment',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int a, b;
+        a = b = 5;
+        System.out.println(a);
+        System.out.println(b);
+    }
+}`
+        },
         pitfalls: [`<code>x = x + 1</code> isn't circular. The old value of x is read completely before the new value overwrites it.`],
         exercises: [{
           id: 't1_4e1',
@@ -268,6 +305,19 @@ char grade = 'A';</pre>
           <li><b>Narrowing</b> (big type → smaller type, e.g. <code>double</code> → <code>int</code>) can lose information, so Java forces you to be explicit with a cast: <code>(int) 5.9</code>. The syntax is the target type in parentheses, right before the value.</li>
         </ul>
         <p>Casting a <code>double</code> to an <code>int</code> specifically <b>truncates</b> — it chops off everything after the decimal point. It does not round to the nearest whole number. <code>(int) 5.9</code> is <code>5</code>, and <code>(int) -5.9</code> is <code>-5</code> (truncation always moves toward zero, not just downward). "Range" in this topic's title refers to the fact that each numeric type can only hold values in a certain range (<code>int</code> maxes out around 2.1 billion) — going past it wraps around unexpectedly, though you're unlikely to hit that outside specifically-designed exam questions.</p>`,
+        example: {
+          label: 'Worked example — widening vs. narrowing',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int wholeNumber = 5;
+        double widened = wholeNumber;      // automatic, no cast needed
+        double decimalValue = 5.9;
+        int narrowed = (int) decimalValue;  // explicit cast required
+        System.out.println(widened);
+        System.out.println(narrowed);
+    }
+}`
+        },
         pitfalls: [`<code>(int)</code> cast truncates, it does not round. <code>(int) 19.99</code> is <code>19</code>, not <code>20</code>.`],
         exercises: [{
           id: 't1_5e1',
@@ -289,6 +339,18 @@ char grade = 'A';</pre>
         <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">total = total + 5;
 total += 5;   // identical, shorter</pre>
         <p>Every arithmetic operator has a compound form: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>. Each means "take my current value, apply this operation with the right-hand side, store the result back in me." When a program has several of these in a row, they execute one at a time, top to bottom — each line's effect is fully applied before the next line reads the variable.</p>`,
+        example: {
+          label: 'Worked example — chaining compound operators',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int total = 10;
+        total += 5;   // 15
+        total -= 2;   // 13
+        total *= 3;   // 39
+        System.out.println(total);
+    }
+}`
+        },
         exercises: [{
           id: 't1_6e1',
           prompt: 'Trace the compound assignments by hand, then run to check your prediction for the final value of total.',
@@ -328,7 +390,21 @@ public class Main {
         System.out.println(rng.nextInt(100));
     }
 }`
-        }
+        },
+        exercises: [{
+          id: 't1_7e1',
+          prompt: 'Add the missing import so this compiles, then run it.',
+          starter: `// TODO: import java.util.Random
+
+public class Main {
+    public static void main(String[] args) {
+        Random rng = new Random(7);
+        System.out.println(rng.nextInt(50));
+    }
+}`,
+          check: out => out.trim() === '36',
+          hint: 'import java.util.Random; goes on its own line, before the class declaration.'
+        }]
       },
       {
         id: '1.8', title: 'Documentation with Comments',
@@ -349,13 +425,38 @@ public class Main {
         System.out.println(Math.PI * radius * radius);
     }
 }`
-        }
+        },
+        exercises: [{
+          id: 't1_8e1',
+          prompt: 'Replace the placeholder comment with your own line comment explaining what rate represents, and add a one-line Javadoc comment directly above the class declaration. (The program must still compile and print the same number.)',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        double rate = 0.075; // TODO: replace with your own comment explaining rate
+        double amount = 40.0;
+        System.out.println(amount * rate);
+    }
+}`,
+          check: out => out.trim() === '3.0',
+          checkSource: src => src.includes('/**') && src.includes('*/') && !src.includes('TODO'),
+          hint: 'Add /** ... */ right above "public class Main", and rewrite the // comment on the rate line (just delete "TODO" and describe what rate is) — don\'t change the numbers.'
+        }]
       },
       {
         id: '1.9', title: 'Method Signatures',
         concept: `<p>A <b>method</b> is a named, reusable block of code you invoke by writing its name followed by parentheses: <code>Math.sqrt(25)</code>. Whatever goes inside the parentheses are its <b>arguments</b>; a method may also produce a <b>return value</b> you can use, like <code>Math.sqrt(25)</code> returning <code>5.0</code>. (You'll write your own methods starting in Unit 3 — for now you're just calling ones Java already provides.)</p>
-        <p>A method's <b>signature</b> is its name plus the number and types of its parameters — notably, the <b>return type is not part of the signature</b>. This matters because of <b>overloading</b>: multiple methods can share the same name as long as their parameter types differ, e.g. <code>println(int)</code> and <code>println(String)</code> are two different overloads of <code>println</code>. When you call an overloaded method, the compiler looks at the arguments you passed and picks the overload that matches — widening a primitive (like <code>int</code> → <code>double</code>) automatically if there's no exact match.</p>`,
+        <p>A method's <b>signature</b> is its name plus the number and types of its parameters — notably, the <b>return type is not part of the signature</b>. This matters because of <b>overloading</b>: multiple methods can share the same name as long as their parameter types differ, e.g. <code>println(int)</code> and <code>println(String)</code> are two different overloads of <code>println</code>. When you call an overloaded method, the compiler looks at the arguments you passed and picks the overload that matches — widening a primitive (like <code>int</code> → <code>double</code>) automatically if there's no exact match.</p>
+        <p>Why does Java bother with overloading at all, instead of forcing every method to have a unique name? Because it lets an API read naturally: you call <code>println</code> the same way whether you're printing a number, a word, or a boolean, instead of memorizing <code>printlnInt</code>, <code>printlnString</code>, <code>printlnBoolean</code> as separate names. The tradeoff is that you need to understand the resolution rule (exact match first, then widening) to predict which overload actually runs — which is exactly what makes it a favorite source of AP exam trick questions.</p>`,
         pitfalls: [`<code>Math.max(3, 4.5)</code> has no <code>max(int, double)</code> overload to match, so the <code>3</code> widens to a double first — the call resolves to <code>max(double, double)</code>, and the result is a <b>double</b>, not an int.`],
+        example: {
+          label: 'Worked example — three overloads of println',
+          code: `public class Main {
+    public static void main(String[] args) {
+        System.out.println(5);      // calls println(int)
+        System.out.println(5.0);    // calls println(double)
+        System.out.println("5");    // calls println(String)
+    }
+}`
+        },
         exercises: [{
           id: 't1_9e1',
           prompt: 'Predict the output — including whether it prints as an int or a double — then run to check.',
@@ -372,6 +473,16 @@ public class Main {
         id: '1.10', title: 'Calling Class Methods',
         concept: `<p>Some methods belong to the <b>class itself</b> rather than to any particular object — these are <code>static</code> methods, and you call them as <code>ClassName.methodName(args)</code>, no object required. You've already been doing this with <code>Math.sqrt(...)</code> and <code>Math.pow(...)</code>. (The opposite — <b>instance</b> methods, called on a specific object — is covered in 1.14.)</p>
         <p>Two static methods you'll use constantly: <code>Integer.parseInt(String)</code> converts text like <code>"42"</code> into the int <code>42</code>, and <code>Double.parseDouble(String)</code> does the same for decimals. These are the standard way to turn real-world text (user input, file contents) into numbers you can actually compute with — you can't do arithmetic on a String.</p>`,
+        example: {
+          label: 'Worked example — parsing two different types',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int quantity = Integer.parseInt("3");
+        double unitPrice = Double.parseDouble("2.50");
+        System.out.println(quantity * unitPrice);
+    }
+}`
+        },
         exercises: [{
           id: 't1_10e1',
           prompt: 'Parse the string into an int, then print double its value.',
@@ -397,6 +508,16 @@ public class Main {
           <li><code>Math.random()</code> — a random double, <code>0.0</code> up to (not including) <code>1.0</code>.</li>
         </ul>
         <p>Note these mostly return <code>double</code>, even when the inputs are ints — worth keeping in mind when you print or assign the result.</p>`,
+        example: {
+          label: 'Worked example — three Math methods',
+          code: `public class Main {
+    public static void main(String[] args) {
+        System.out.println(Math.pow(2, 10));
+        System.out.println(Math.sqrt(25));
+        System.out.println(Math.abs(-7));
+    }
+}`
+        },
         exercises: [{
           id: 't1_11e1',
           prompt: 'Compute the hypotenuse of a right triangle with legs 6 and 8 using the Pythagorean theorem. Use Math.pow and Math.sqrt.',
@@ -414,7 +535,8 @@ public class Main {
       {
         id: '1.12', title: 'Objects: Instances of Classes',
         concept: `<p>Everything you've used so far (<code>int</code>, <code>double</code>, <code>boolean</code>, <code>char</code>) is a <b>primitive</b> — the variable holds the actual value. An <b>object</b> is different: an object variable holds a <b>reference</b> (essentially, a memory address) pointing to where the object actually lives. <code>String</code>, which you've been using since 1.2, is secretly an object, not a primitive — it just gets special convenience syntax (double-quoted literals) that makes it look like one.</p>
-        <p>This distinction matters most for comparison. <code>==</code> on primitives compares values, exactly like you'd expect. But <code>==</code> on objects compares <b>references</b> — it asks "do these two variables point to the exact same object in memory?", not "do they represent the same content?" Two completely separate String objects can hold identical characters and still fail an <code>==</code> check, because they're different objects at different addresses. To compare an object's actual content, use its <code>.equals()</code> method instead.</p>`,
+        <p>This distinction matters most for comparison. <code>==</code> on primitives compares values, exactly like you'd expect. But <code>==</code> on objects compares <b>references</b> — it asks "do these two variables point to the exact same object in memory?", not "do they represent the same content?" Two completely separate String objects can hold identical characters and still fail an <code>==</code> check, because they're different objects at different addresses. To compare an object's actual content, use its <code>.equals()</code> method instead.</p>
+        <p>Think of a primitive variable as a box that directly contains its value. An object variable, by contrast, is more like a sticky note with an address written on it — the actual object lives elsewhere in memory, and the variable just points to it. Copying a primitive copies the value itself; copying an object reference just copies the address, so both variables end up pointing at the very same object. This is exactly why <code>==</code> behaves so differently for the two: comparing two "boxes" compares what's inside them, but comparing two "sticky notes" only checks whether they point to the same place.</p>`,
         pitfalls: [`<code>new String("hi") == new String("hi")</code> is <b>false</b>. Same characters, different objects. This is the single most common AP trap involving objects.`],
         exercises: [{
           id: 't1_12e1',
@@ -429,12 +551,34 @@ public class Main {
 }`,
           check: out => out.trim() === 'false\ntrue',
           hint: '== asks "same object?" (no). .equals() asks "same content?" (yes).'
-        }]
+        }],
+        example: {
+          label: 'Worked example — primitive copies vs. object references',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int x = 5;
+        int y = x;   // y gets a COPY of the value
+        y = 10;
+        System.out.println(x);  // x is unaffected
+        System.out.println(y);
+    }
+}`
+        }
       },
       {
         id: '1.13', title: 'Object Creation and Storage (Instantiation)',
         concept: `<p>To bring an object into existence, you use the <code>new</code> keyword followed by a call that looks like a method — this is a <b>constructor</b>: <code>String s = new String("hi");</code>. The constructor allocates memory for the object, sets it up, and <code>new</code> hands back a reference to it, which you store in a variable. From then on, that variable is your handle to the object — you call its instance methods through it with dot notation: <code>s.length()</code>.</p>
-        <p>(In practice, String literals like <code>"hi"</code> already create a String object behind the scenes, so you rarely write <code>new String(...)</code> in real code — but seeing it explicitly here makes the object-creation step visible instead of hidden.)</p>`,
+        <p>(In practice, String literals like <code>"hi"</code> already create a String object behind the scenes, so you rarely write <code>new String(...)</code> in real code — but seeing it explicitly here makes the object-creation step visible instead of hidden.)</p>
+        <p>A <b>constructor</b> looks like a method with the same name as the class and no return type — its job is purely to set up a new object's initial state. You'll write your own constructors starting in Unit 3 when you design classes yourself; for now, every class you use (<code>String</code>, <code>Random</code>, and later <code>Scanner</code>, <code>ArrayList</code>) already comes with constructors built in, and <code>new</code> is how you invoke one.</p>`,
+        example: {
+          label: 'Worked example — creating an object and inspecting it',
+          code: `public class Main {
+    public static void main(String[] args) {
+        String greeting = new String("Hello there");
+        System.out.println(greeting.length());
+    }
+}`
+        },
         exercises: [{
           id: 't1_13e1',
           prompt: 'Create message by calling an instance method on first to combine it with second (no + operator).',
@@ -460,7 +604,8 @@ public class Main {
           <li><code>.toUpperCase()</code> / <code>.toLowerCase()</code> — a new String, case-converted.</li>
           <li><code>.indexOf(x)</code> — position of the first occurrence of <code>x</code>, or <code>-1</code> if absent.</li>
           <li><code>.equals(other)</code> — content comparison (see 1.12).</li>
-        </ul>`,
+        </ul>
+        <p>Notice the pattern in every one of these: you write the object first, a dot, then the method name — <code>course.length()</code>, not <code>length(course)</code>. That's the visual signature of an instance method. Static methods (1.10) read the other way around, class name first: <code>Integer.parseInt(text)</code>. Once you can tell these two calling patterns apart on sight, a lot of Java code becomes much easier to read.</p>`,
         exercises: [{
           id: 't1_14e1',
           prompt: 'Fill in len and first using instance methods on course.',
@@ -475,7 +620,17 @@ public class Main {
 }`,
           check: out => out.trim() === '21\nA',
           hint: 'len = course.length(); first = course.charAt(0);'
-        }]
+        }],
+        example: {
+          label: 'Worked example — two more instance methods',
+          code: `public class Main {
+    public static void main(String[] args) {
+        String city = "Boston";
+        System.out.println(city.toUpperCase());
+        System.out.println(city.indexOf('s'));
+    }
+}`
+        }
       },
       {
         id: '1.15', title: 'String Manipulation',
@@ -487,8 +642,19 @@ public class Main {
           <li><code>.trim()</code> — a copy with leading/trailing whitespace removed.</li>
           <li><code>.compareTo(other)</code> — negative, zero, or positive, for alphabetical ordering.</li>
         </ul>
-        <p><code>indexOf</code> returns <code>-1</code>, not a boolean, when it finds nothing — treating that <code>-1</code> as if it meant "false" is a common mistake, since <code>-1</code> is just as truthy/nonzero as any other int.</p>`,
+        <p><code>indexOf</code> returns <code>-1</code>, not a boolean, when it finds nothing — treating that <code>-1</code> as if it meant "false" is a common mistake, since <code>-1</code> is just as truthy/nonzero as any other int.</p>
+        <p>Indexing works the same way it did for <code>.charAt(i)</code> back in 1.14: the first character is index 0, and the last is index <code>length() - 1</code>. <code>substring</code>'s "end index excluded" rule has a convenient side effect worth memorizing: <code>end - start</code> always tells you exactly how many characters you get back — <code>substring(2, 5)</code> gives you <code>5 - 2 = 3</code> characters.</p>`,
         pitfalls: [`<code>"Hello".substring(1, 4)</code> takes indices 1, 2, 3 → <code>"ell"</code>. Index 4 ('o') is excluded — the end index is never included.`],
+        example: {
+          label: 'Worked example — substring and case conversion',
+          code: `public class Main {
+    public static void main(String[] args) {
+        String phrase = "Hello, World!";
+        System.out.println(phrase.substring(7));
+        System.out.println(phrase.toUpperCase());
+    }
+}`
+        },
         exercises: [
           {
             id: 't1_15e1',
@@ -525,11 +691,497 @@ public class Main {
   {
     num: 2, title: 'Selection and Iteration', weight: '25–35%',
     topics: [
-      '2.1 Algorithms with Selection and Repetition', '2.2 Boolean Expressions', '2.3 if Statements',
-      '2.4 Nested if Statements', '2.5 Compound Boolean Expressions', '2.6 Comparing Boolean Expressions',
-      '2.7 while Loops', '2.8 for Loops', '2.9 Implementing Selection and Iteration Algorithms',
-      '2.10 Implementing String Algorithms', '2.11 Nested Iteration', '2.12 Informal Run-Time Analysis'
-    ].map(s => ({ id: s.split(' ')[0], title: s.slice(s.indexOf(' ') + 1), locked: true }))
+      {
+        id: '2.1', title: 'Algorithms with Selection and Repetition',
+        concept: `<p>So far every program has run top to bottom, one statement after another — <b>sequence</b>. Real algorithms need two more tools: <b>selection</b> (branch — do this <i>or</i> that, depending on a condition) and <b>repetition</b> (loop — do this again, and again, until some condition changes). Every algorithm you'll ever write is built from just these three building blocks: sequence, selection, repetition.</p>
+        <p>The next several topics teach selection (<code>if</code>) in detail first, then repetition (<code>while</code>, <code>for</code>). Here's a preview of the shape of both, so you recognize them once we slow down:</p>`,
+        example: {
+          label: 'Preview — selection and repetition together',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int n = 4;
+        if (n % 2 == 0) {              // selection: branch on a condition
+            System.out.println("even");
+        } else {
+            System.out.println("odd");
+        }
+        int i = 1;
+        while (i <= 3) {                // repetition: repeat while true
+            System.out.println("lap " + i);
+            i++;
+        }
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_1e1',
+          prompt: 'Predict the full output for n = 7 and a loop that runs while i <= 2, then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int n = 7;
+        if (n % 2 == 0) {
+            System.out.println("even");
+        } else {
+            System.out.println("odd");
+        }
+        int i = 1;
+        while (i <= 2) {
+            System.out.println("lap " + i);
+            i++;
+        }
+    }
+}`,
+          check: out => out.trim() === 'odd\nlap 1\nlap 2',
+          hint: '7 % 2 is 1, not 0, so the else branch runs. Then the loop prints "lap 1" and "lap 2" before i becomes 3 and the condition fails.'
+        }]
+      },
+      {
+        id: '2.2', title: 'Boolean Expressions',
+        concept: `<p>A <b>boolean expression</b> is anything that evaluates to <code>true</code> or <code>false</code>. The relational operators build them from values you already know how to compute: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code> (ordering), and <code>==</code>, <code>!=</code> (equal / not equal). These work on primitives — including <code>char</code>, which compares by Unicode value, so <code>'a' &lt; 'b'</code> is <code>true</code> the same way <code>1 &lt; 2</code> is.</p>
+        <p>Relational operators bind more loosely than arithmetic, so <code>x + 1 &gt; y * 2</code> computes both sides first, exactly like you'd expect from math notation. A subtlety worth knowing: in some languages, writing <code>=</code> where you meant <code>==</code> silently compiles and causes chaos. Java protects you — <code>if (x = 5)</code> is a compile error unless <code>x</code> is itself a <code>boolean</code>, because assignment produces a value of x's type, not necessarily a boolean.</p>`,
+        pitfalls: [`<code>==</code> compares object <b>references</b>, not content — this is the same trap from 1.12, and it applies to any boolean expression comparing two objects (Strings included).`],
+        example: {
+          label: 'Worked example — building boolean expressions',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int temperature = 72;
+        boolean isWarm = temperature > 65;
+        boolean isTooHot = temperature >= 90;
+        System.out.println(isWarm);
+        System.out.println(isTooHot);
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_2e1',
+          prompt: 'Predict all three lines, then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int x = 7;
+        System.out.println(x >= 7);
+        System.out.println('a' < 'b');
+        System.out.println(10 / 3 == 3);
+    }
+}`,
+          check: out => out.trim() === 'true\ntrue\ntrue',
+          hint: 'x>=7 is true. Characters compare by Unicode order, a comes before b. 10/3 is integer division -> 3, and 3==3 is true.'
+        }]
+      },
+      {
+        id: '2.3', title: 'if Statements',
+        concept: `<p>An <code>if</code> statement runs a block only when its boolean condition is true:</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">if (condition) {
+    // runs only if condition is true
+} else {
+    // runs only if condition is false
+}</pre>
+        <p>You can chain more branches with <code>else if</code> (covered fully in 1.4's neighbor topic, 2.4). The <code>{ }</code> braces mark the block controlled by the <code>if</code> — but they're technically optional if the block is a single statement. That optionality is a trap, not a convenience.</p>`,
+        pitfalls: [`Without braces, <code>if</code> controls <b>only the very next statement</b> — indentation is just a suggestion to human readers, the compiler doesn't care about it at all. A line that looks nested by indentation but isn't inside <code>{ }</code> runs unconditionally, every time.`],
+        example: {
+          label: 'Worked example — if/else with braces',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int temperature = 45;
+        if (temperature < 32) {
+            System.out.println("Freezing");
+        } else {
+            System.out.println("Not freezing");
+        }
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_3e1',
+          prompt: 'Predict the output — pay close attention to which lines are actually controlled by the if. Then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int score = 55;
+        if (score >= 60)
+            System.out.println("Pass");
+            System.out.println("Grade recorded");
+        System.out.println("Done");
+    }
+}`,
+          check: out => out.trim() === 'Grade recorded\nDone',
+          hint: 'Without braces, the if controls only "Pass". "Grade recorded" is not inside the if at all, despite the indentation — it always runs.'
+        }]
+      },
+      {
+        id: '2.4', title: 'Nested if Statements',
+        concept: `<p>An <code>if</code>/<code>else if</code>/<code>else</code> chain is checked <b>top to bottom</b>, and the first condition that's true wins — every later branch is skipped, even if it would also be true. This makes <b>order</b> a real design decision, not a style choice: put the most specific (tightest) condition first, and the most general (loosest) last.</p>`,
+        pitfalls: [`A common bug: checking the loosest range first. <code>if (score &gt;= 60) ... else if (score &gt;= 90) ...</code> — a score of 95 satisfies <b>both</b> conditions, but the first one wins, so it never reaches the &gt;= 90 branch at all.`],
+        example: {
+          label: 'Worked example — an else-if chain, correctly ordered',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int windSpeed = 40;
+        String category;
+        if (windSpeed >= 74) {
+            category = "Hurricane";
+        } else if (windSpeed >= 39) {
+            category = "Tropical Storm";
+        } else {
+            category = "Tropical Depression";
+        }
+        System.out.println(category);
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_4e1',
+          prompt: 'A score of 85 should print "B", but this prints "D" — the conditions are ordered loosest-first. Reorder them tightest-first to fix it.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int score = 85;
+        String grade;
+        if (score >= 60) grade = "D";
+        else if (score >= 70) grade = "C";
+        else if (score >= 80) grade = "B";
+        else if (score >= 90) grade = "A";
+        else grade = "F";
+        System.out.println(grade);
+    }
+}`,
+          check: out => out.trim() === 'B',
+          hint: 'Check the highest cutoff first: >=90 -> A, >=80 -> B, >=70 -> C, >=60 -> D, else F.'
+        }]
+      },
+      {
+        id: '2.5', title: 'Compound Boolean Expressions',
+        concept: `<p>Combine boolean expressions with <code>&&</code> (and — both sides must be true), <code>||</code> (or — at least one side must be true), and <code>!</code> (not — flips true/false). Java evaluates these with <b>short-circuit evaluation</b>: for <code>&&</code>, if the left side is false, the right side is never evaluated at all (the answer is already known to be false); for <code>||</code>, if the left side is true, the right side is skipped too.</p>
+        <p>This isn't just an optimization — it's a tool. You can use it to guard against an operation that would otherwise fail:</p>`,
+        pitfalls: [`Order matters for a short-circuit guard. <code>if (b != 0 && a / b > 1)</code> is safe — <code>b != 0</code> is checked first, and if it's false the division never runs. Swap the order to <code>if (a / b > 1 && b != 0)</code> and the division always runs first, crashing with <code>ArithmeticException</code> whenever b is 0.`],
+        example: {
+          label: 'Worked example — combining conditions with && and ||',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int age = 16;
+        boolean hasPermit = true;
+        boolean canDrive = age >= 16 && hasPermit;
+        boolean isMinor = age < 18 || !hasPermit;
+        System.out.println(canDrive);
+        System.out.println(isMinor);
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_5e1',
+          prompt: 'Predict the output — b is 0, so does the division ever actually run? Then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int a = 10, b = 0;
+        if (b != 0 && a / b > 1) {
+            System.out.println("safe division check passed");
+        } else {
+            System.out.println("skipped unsafe division");
+        }
+    }
+}`,
+          check: out => out.trim() === 'skipped unsafe division',
+          hint: 'b != 0 is false, so && short-circuits — a / b never runs, so there\'s no divide-by-zero crash.'
+        }]
+      },
+      {
+        id: '2.6', title: 'Comparing Boolean Expressions',
+        concept: `<p>Two boolean expressions are <b>equivalent</b> if they always produce the same result for every possible input — you can swap one for the other anywhere. <b>De Morgan's Laws</b> give you a mechanical way to rewrite a negated compound expression without the outer negation:</p>
+        <ul>
+          <li><code>!(A && B)</code> is equivalent to <code>!A || !B</code></li>
+          <li><code>!(A || B)</code> is equivalent to <code>!A && !B</code></li>
+        </ul>
+        <p>Notice the operator flips (<code>&&</code> ↔ <code>||</code>) along with distributing the <code>!</code> across both sides. This is genuinely useful: <code>!(A && B)</code> requires you to compute A and B and then negate; <code>!A || !B</code> can short-circuit immediately if <code>!A</code> alone is true.</p>`,
+        example: {
+          label: 'Worked example — De Morgan\'s Law in action',
+          code: `public class Main {
+    public static void main(String[] args) {
+        boolean raining = true;
+        boolean windy = false;
+        boolean niceOut = !(raining || windy);
+        boolean sameAnswer = !raining && !windy;
+        System.out.println(niceOut);
+        System.out.println(sameAnswer);
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_6e1',
+          prompt: 'Rewrite both De Morgan equivalences (no outer !) so they match the originals for both value pairs below.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        boolean a1 = true, b1 = false;
+        boolean a2 = false, b2 = false;
+        boolean original1 = !(a1 && b1);
+        boolean rewritten1 = false; // TODO: De Morgan's rewrite of !(a1 && b1), no outer !
+        boolean original2 = !(a2 && b2);
+        boolean rewritten2 = false; // TODO: same pattern for a2/b2
+        System.out.println(original1 == rewritten1);
+        System.out.println(original2 == rewritten2);
+    }
+}`,
+          check: out => out.trim() === 'true\ntrue',
+          hint: '!(a && b) becomes !a || !b. Apply that same pattern to both pairs.'
+        }]
+      },
+      {
+        id: '2.7', title: 'while Loops',
+        concept: `<p>A <code>while</code> loop repeats its block for as long as its condition stays true — checked <b>before</b> every iteration, including the first. If the condition is false right away, the loop body never runs at all (zero iterations is a valid outcome).</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">int count = 1;
+while (count <= 5) {
+    System.out.println(count);
+    count++;   // MUST change something the condition depends on
+}</pre>
+        <p>That last line is the whole game: something inside the loop body has to eventually make the condition false, or the loop never ends — an <b>infinite loop</b>. This is the single most common bug with <code>while</code>: forgetting to update the loop-control variable.</p>`,
+        pitfalls: [`Every exercise here uses a fixed, finite bound on purpose. If you experiment on your own and a Run seems stuck forever, you likely wrote a condition that never becomes false — reload the page.`],
+        example: {
+          label: 'Worked example — a while loop that counts down',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int countdown = 3;
+        while (countdown > 0) {
+            System.out.println(countdown);
+            countdown--;
+        }
+        System.out.println("Liftoff!");
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_7e1',
+          prompt: 'Predict the full output exactly (including spacing), then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int count = 1;
+        while (count <= 5) {
+            System.out.print(count + " ");
+            count++;
+        }
+        System.out.println();
+        System.out.println("Done, count is now " + count);
+    }
+}`,
+          check: out => out.trim() === '1 2 3 4 5 \nDone, count is now 6',
+          hint: 'The loop prints 1 through 5 (each followed by a space) on one line, then a blank println moves to a new line, then the final message — count ends at 6 because it was incremented once more after the last print, right before the condition failed.'
+        }]
+      },
+      {
+        id: '2.8', title: 'for Loops',
+        concept: `<p>A <code>for</code> loop packages the three parts every counting loop needs into one line: <code>for (init; condition; update)</code>. It's exactly equivalent to a <code>while</code> loop, just more compact for the extremely common "count from A to B" pattern:</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">for (int i = 1; i <= 5; i++) {
+    System.out.println(i);
+}
+// equivalent to:
+int i = 1;
+while (i <= 5) {
+    System.out.println(i);
+    i++;
+}</pre>
+        <p><code>init</code> runs once, before anything else. <code>condition</code> is checked before every iteration. <code>update</code> runs after every full pass through the body, right before the condition is checked again.</p>`,
+        pitfalls: [`Off-by-one is the classic <code>for</code>-loop bug: using <code>&lt;</code> when you meant <code>&lt;=</code> (or vice versa) silently includes or excludes one endpoint.`],
+        example: {
+          label: 'Worked example — a counting for loop',
+          code: `public class Main {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 5; i++) {
+            System.out.println("Lap " + i);
+        }
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_8e1',
+          prompt: 'This should sum every integer from 1 to 10 inclusive (should be 55), but it stops one short. Fix the loop bound.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int sum = 0;
+        for (int i = 1; i < 10; i++) {
+            sum += i;
+        }
+        System.out.println(sum);
+    }
+}`,
+          check: out => out.trim() === '55',
+          hint: 'i < 10 stops after i=9. You need i <= 10 to include 10.'
+        }]
+      },
+      {
+        id: '2.9', title: 'Implementing Selection and Iteration Algorithms',
+        concept: `<p>The combination of a loop plus an <code>if</code> inside it is the workhorse of nearly every algorithm you'll write this year: scan through a sequence of values, and for each one, decide something. A running total that only counts values meeting a condition is called an <b>accumulator pattern</b> — you'll see it constantly, later with arrays and ArrayLists too.</p>`,
+        example: {
+          label: 'Worked example — accumulator pattern (sum of even numbers)',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int sumOfEvens = 0;
+        for (int i = 1; i <= 10; i++) {
+            if (i % 2 == 0) {
+                sumOfEvens += i;
+            }
+        }
+        System.out.println(sumOfEvens);
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_9e1',
+          prompt: 'Count how many integers from 1 to 50 (inclusive) are divisible by 7.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        int count = 0;
+        for (int i = 1; i <= 50; i++) {
+            if (i % 7 == 0) {
+                count = 0; // TODO: this should accumulate, not reset
+            }
+        }
+        System.out.println(count);
+    }
+}`,
+          check: out => out.trim() === '7',
+          hint: 'count++ (or count += 1) — you want to add one each time, not wipe it back to zero.'
+        }]
+      },
+      {
+        id: '2.10', title: 'Implementing String Algorithms',
+        concept: `<p>Combine a loop with <code>.charAt(i)</code> and <code>.length()</code> to process a String one character at a time — since Strings don't support a "for each character" shortcut on their own before Unit 4's tools, this index-based scan is the standard pattern:</p>
+        <pre class="mono" style="background:#0e0f13;padding:10px 14px;border-radius:6px;overflow-x:auto;">for (int i = 0; i < word.length(); i++) {
+    char c = word.charAt(i);
+    // do something with c
+}</pre>`,
+        pitfalls: [`<code>word.charAt(word.length())</code> throws <code>StringIndexOutOfBoundsException</code> — valid indices only go up to <code>length() - 1</code>. This is exactly why the loop condition is <code>i &lt; word.length()</code>, never <code>i &lt;= word.length()</code>.`],
+        example: {
+          label: 'Worked example — counting a specific character',
+          code: `public class Main {
+    public static void main(String[] args) {
+        String word = "mississippi";
+        int sCount = 0;
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) == 's') {
+                sCount++;
+            }
+        }
+        System.out.println(sCount);
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_10e1',
+          prompt: 'This should count the vowels in word (expected: 3), but the loop never runs. Fix the loop bound.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        String word = "programming";
+        int vowelCount = 0;
+        for (int i = 0; i < 0; i++) {
+            char c = word.charAt(i);
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                vowelCount++;
+            }
+        }
+        System.out.println(vowelCount);
+    }
+}`,
+          check: out => out.trim() === '3',
+          hint: 'i < 0 never even starts. You need i < word.length() to scan every character.'
+        }]
+      },
+      {
+        id: '2.11', title: 'Nested Iteration',
+        concept: `<p>A loop written inside another loop's body is a <b>nested loop</b>. For each single pass of the outer loop, the entire inner loop runs to completion — so the inner body executes <code>outer iterations × inner iterations</code> times in total. This is how you process anything grid-shaped (rows and columns, taken up formally with 2D arrays in Unit 4).</p>`,
+        pitfalls: [`Reusing a variable name for both loops (e.g. <code>i</code> for both) is a compile error if they're nested in the same scope — Java requires distinct names, conventionally <code>i</code> for the outer loop and <code>j</code> for the inner.`],
+        example: {
+          label: 'Worked example — a nested loop printing a rectangle',
+          code: `public class Main {
+    public static void main(String[] args) {
+        for (int row = 1; row <= 2; row++) {
+            for (int col = 1; col <= 4; col++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}`
+        },
+        exercises: [{
+          id: 't2_11e1',
+          prompt: 'Predict the full grid of output (3 lines, values space-separated), then run to check.',
+          starter: `public class Main {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 3; i++) {
+            for (int j = 1; j <= 3; j++) {
+                System.out.print(i * j + " ");
+            }
+            System.out.println();
+        }
+    }
+}`,
+          check: out => out.trim() === '1 2 3 \n2 4 6 \n3 6 9',
+          hint: 'For each i, the inner loop runs j=1,2,3 and prints i*j — that\'s a multiplication table.'
+        }]
+      },
+      {
+        id: '2.12', title: 'Informal Run-Time Analysis',
+        concept: `<p>You don't need formal Big-O notation for the AP exam — just an intuitive sense of how the <b>amount of work</b> a piece of code does grows as the input size <code>n</code> grows. A single loop over <code>n</code> items does roughly <code>n</code> units of work — <b>linear</b> growth: double <code>n</code>, and the work roughly doubles. A loop nested inside another loop, both running <code>n</code> times, does roughly <code>n × n = n²</code> units of work — <b>quadratic</b> growth: double <code>n</code>, and the work roughly <b>quadruples</b>.</p>
+        <p>You can watch this directly by literally counting how many times each structure executes its innermost line for the same <code>n</code>:</p>`,
+        example: {
+          label: 'Worked example — same idea, a different n',
+          code: `public class Main {
+    public static void main(String[] args) {
+        int n = 3;
+        int linear = 0;
+        for (int i = 0; i < n; i++) linear++;
+        int quadratic = 0;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) quadratic++;
+        System.out.println(linear);
+        System.out.println(quadratic);
+    }
+}`
+        },
+        exercises: [
+          {
+            id: 't2_12e1',
+            prompt: 'Predict both counts for n = 5, then run to check.',
+            starter: `public class Main {
+    public static void main(String[] args) {
+        int n = 5;
+        int singleLoopSteps = 0;
+        for (int i = 0; i < n; i++) {
+            singleLoopSteps++;
+        }
+        int nestedLoopSteps = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                nestedLoopSteps++;
+            }
+        }
+        System.out.println(singleLoopSteps);
+        System.out.println(nestedLoopSteps);
+    }
+}`,
+            check: out => out.trim() === '5\n25',
+            hint: 'A single loop over n=5 runs 5 times. The nested loop runs its inner body n*n = 25 times.'
+          },
+          {
+            id: 't2_12e2_checkpoint',
+            prompt: 'Unit 2 checkpoint (interleaves 2.2, 2.3/2.5, 2.7–2.8, 2.10): count uppercase letters in text, but stop scanning as soon as a digit is found — using a boolean flag in the loop condition, not a fill-in break.',
+            starter: `public class Main {
+    public static void main(String[] args) {
+        String text = "HelloW3rld";
+        int upperCount = 0;
+        boolean foundDigit = false;
+        for (int i = 0; i < text.length() && !foundDigit; i++) {
+            char c = text.charAt(i);
+            if (c >= '0' && c <= '9') {
+                foundDigit = true;
+            } else if (c >= 'A' && c <= 'Z') {
+                upperCount = 0; // TODO: this should accumulate, not reset
+            }
+        }
+        System.out.println(upperCount);
+    }
+}`,
+            check: out => out.trim() === '2',
+            hint: 'upperCount++ instead of resetting. It counts H and W (index 0 and 5) before hitting the digit 3 at index 6, which flips foundDigit and stops the loop via the compound condition.'
+          }
+        ]
+      }
+    ]
   },
   {
     num: 3, title: 'Class Creation', weight: '10–18%',
@@ -591,6 +1243,16 @@ function setDone(id){
 }
 
 // ---------- Java runner ----------
+// Best-effort guard against a student-written infinite loop (Unit 2 introduces while/for).
+// CheerpJ cooperatively yields to the event loop, so a timed race can usually still fire
+// and unstick the UI even while a runaway loop keeps executing underneath.
+function withTimeout(promise, ms, label){
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(label + ' timed out — check for an infinite loop')), ms))
+  ]);
+}
+
 async function runJava(sourceCode, consoleEl, statusEl, runBtn){
   if(!cheerpjReady){
     statusEl.textContent = 'Java runtime still loading — wait a moment and try again.';
@@ -607,7 +1269,7 @@ async function runJava(sourceCode, consoleEl, statusEl, runBtn){
     const encoder = new TextEncoder();
     cheerpOSAddStringFile('/str/Main.java', encoder.encode(sourceCode));
     const classPath = '/str/tools.jar:/files/';
-    const compileCode = await cheerpjRunMain('com.sun.tools.javac.Main', classPath, '/str/Main.java', '-d', '/files/');
+    const compileCode = await withTimeout(cheerpjRunMain('com.sun.tools.javac.Main', classPath, '/str/Main.java', '-d', '/files/'), 20000, 'Compile');
     if(compileCode !== 0){
       await new Promise(r => setTimeout(r, 150));
       statusEl.textContent = 'Compile error';
@@ -615,7 +1277,7 @@ async function runJava(sourceCode, consoleEl, statusEl, runBtn){
       return { ok:false, output: consoleEl.textContent };
     }
     statusEl.textContent = 'Running…';
-    await cheerpjRunMain('Main', classPath);
+    await withTimeout(cheerpjRunMain('Main', classPath), 15000, 'Run');
     await new Promise(r => setTimeout(r, 150));
     return { ok:true, output: consoleEl.textContent };
   }catch(e){
@@ -701,7 +1363,8 @@ function buildExerciseCard(topic, ex, idx){
   runBtn.onclick = async () => {
     const result = await runJava(cm.getValue(), consoleEl, statusEl, runBtn);
     if(!result) return;
-    if(result.ok && ex.check(result.output)){
+    const sourceOk = !ex.checkSource || ex.checkSource(cm.getValue());
+    if(result.ok && ex.check(result.output) && sourceOk){
       statusEl.textContent = 'Passed';
       statusEl.className = 'status status-pass';
       setDone(ex.id);
